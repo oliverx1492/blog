@@ -92,19 +92,37 @@ app.post("/login", async (req,res) => {
 
 
         if(hash !== storedHash) {
-            return res.status(401).json({message: "Üngültige Anmeldedaten"})
+            return res.status(401).json({message: "Falsche Anmeldedaten"})
         }
 
-        res.status(200).json({message: "Anmeldung erfolgreich"})
+        res.status(200).json({message: "Anmeldung erfolgreich", username: user.username, id: user.id})
 
     }
 
     catch(error) {
         console.log("Fehler aufgetreten: ", error)
-        res.status(500).json({message: error})
+        res.status(500).json({message: "Falsche Eingabe"})
     }
 
 
+})
+
+app.post("/new", async (req,res) => {
+    const {author, content, category} = req.body
+    console.log(author, content, category)
+
+    try {
+        const query = await sql`INSERT INTO blog (author, content, category) VALUES (${author}, ${content}, ${category}) RETURNING*`
+        res.status(200).json({message: "angekommen"})
+    
+    }
+
+    catch(error) {
+        res.status(500).json({message: "Fehler aufgretreten"})
+    }
+
+
+    
 })
 
 app.listen(port, () => {
