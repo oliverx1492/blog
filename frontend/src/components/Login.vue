@@ -28,7 +28,7 @@
                 console.log("USER: ", data.username, data.id)
                 localStorage.setItem("lsUsername", data.username)
                 localStorage.setItem("lsId", data.id)
-                router.push("/home")
+                router.push("/")
                 
             }
 

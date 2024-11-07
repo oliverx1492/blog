@@ -26,7 +26,7 @@ const publishBlog = async (props) => {
             const data = await response.json()
             console.log(data.message)
             setTimeout( ()=> {
-                router.push("/home")
+                router.push("/")
             }, 500 )
         }
         else {

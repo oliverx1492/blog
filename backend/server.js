@@ -125,6 +125,20 @@ app.post("/new", async (req,res) => {
     
 })
 
+app.post("/profile", async (req,res) => {
+    const {username} = req.body
+    
+    try {
+        const query = await sql`SELECT * FROM blog WHERE author = ${username}`
+        console.log(query)
+        res.status(200).json({message: "Call erfolgreich", data: query})
+    }
+    
+    catch(error) {
+        res.status(500).json({message: error})
+    }
+})
+
 app.listen(port, () => {
     console.log("Server läuft auf PORT: ", port)
 })

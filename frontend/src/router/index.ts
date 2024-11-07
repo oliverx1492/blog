@@ -8,7 +8,7 @@ import Profile from "../components/Profile.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
-        path: "/home",
+        path: "/",
         name: "Home",
         component: Home
     },
@@ -39,17 +39,19 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach( (to, from, next) => {
-    
-
-    if (!localStorage.getItem("lsId") && to.path !== "/login") {
-        next("/login")
+router.beforeEach((to, from, next) => {
+    // Überprüfen, ob der Benutzer eingeloggt ist, indem wir nach "lsId" im localStorage suchen
+    const isLoggedIn = !!localStorage.getItem("lsId");
+  
+    // Wenn der Benutzer nicht eingeloggt ist und versucht, auf die Hauptseite ("/") oder eine andere geschützte Route zuzugreifen
+    if (!isLoggedIn && to.path !== "/login" && to.path !== "/signup") {
+      // Umleitung zur Login-Seite
+      next("/login");
+    } else {
+      // Andernfalls die Navigation fortsetzen
+      next();
     }
-    else {
-        next()
-    }
-
-} )
+  });
 
 
 export default router
