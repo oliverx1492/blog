@@ -1,8 +1,8 @@
 <script setup>
-
+    import router from '../router';
     import { ref } from 'vue';
-import { store } from '../store';
-    console.log(store.isLoggedIn)
+   
+   
 
     //Anmeldedaten
     const username = ref("")
@@ -25,10 +25,15 @@ import { store } from '../store';
             const data = await response.json()
             if(response.ok) {
                 console.log(data.message)
+                console.log("USER: ", data.username, data.id)
+                localStorage.setItem("lsUsername", data.username)
+                localStorage.setItem("lsId", data.id)
+                router.push("/home")
+                
             }
 
             else {
-                console.log(data.message)
+                console.log("ERROR MESSAGE: ", data.message)
                 errorMessage.value = data.message
             }
         }
