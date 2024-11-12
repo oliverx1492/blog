@@ -1,0 +1,132 @@
+<script setup>
+import { useRoute, useRouter } from 'vue-router';
+import Navbar from './Navbar.vue';
+import { onMounted, ref } from 'vue';
+
+
+const route = useRoute()
+const id = route.params.id
+const post = ref([])
+const errorMessage = ref("")
+
+const comment = ref("")
+
+//Aus Backend fetchen und ein Input für Kommentare verwenden
+const getPostDetail = async (postID) => {
+
+    try {
+        const response = await fetch("http://localhost:3000/postDetail", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({ postID: postID })
+        })
+
+        if (response.ok) {
+            const data = await response.json()
+            console.log(data.data)
+            post.value = data.data
+            console.log("PV: ", post.value[0].id)
+        }
+
+        else {
+            console.log("Response not okay")
+            const data = await response.json()
+            console.log(data.message)
+        }
+    }
+
+    catch (err) {
+        console.error("Fehler aufgetreten: ", err)
+    }
+
+
+
+}
+
+const fetchComment = async (commentData) => {
+    try {
+        const response = await fetch("http://localhost:3000/newComment", {
+            method: "POST",
+            headers: {
+                "Content-type":"application/json"
+            },
+            body: JSON.stringify(commentData)
+        })
+
+        if (response.ok) {
+            const data = await response.json()
+            console.log(data)
+            getPostDetail(id)
+        }
+
+        else {
+            const data = await response.json()
+            console.log(data)
+        }
+    }
+
+    catch(err) {
+        console.error(err);
+        
+    }
+}
+
+const submitComment = (e) => {
+    e.preventDefault();
+    errorMessage.value = ""
+    if(!comment.value) {
+        return errorMessage.value = "Kein Kommentar"
+    }
+    console.log(comment.value)
+    console.log("Author: ", localStorage.getItem("lsUsername"))
+    console.log("POST ID: ",id)
+    const username = localStorage.getItem("lsUsername")
+
+    // Backend route definieren
+    fetchComment({postID:id, author: username, comment: comment.value})
+}
+
+onMounted(() => {
+    getPostDetail(id)
+})
+
+
+
+</script>
+
+<template>
+    <Navbar />
+    <div class="flex flex-col justify-center items-center">
+
+        Post {{ id }}
+        <p class="text-2xl m-4 p-4">Meine Postings</p>
+
+        <div v-for="(item, index) in post" :key="index" class="w-2/3">
+            <div class="border border-sky-800 rounded-lg p-4 m-4 ">
+                <!-- Post -->
+                <div class="min-h-64">
+                    <p class="text-xl p-2 m-2">{{ item.author }}</p>
+                    <hr />
+                    <p class="text-lg p-2">{{ item.content }}</p>
+                </div>
+                <!-- Kommentare -->
+                <div v-for="(item, indexComm) in post[index].comments" :key="indexComm">
+                    <div class="border m-2 p-2">
+                        {{ item.author }}
+                        {{ item.comment }}
+                    </div>
+                   
+                </div>
+                
+                <hr />
+                <form @submit="submitComment" class="flex justify-around items-center p-4 m-4">
+                    <input v-model="comment" type="text" class="m-2 p-2 w-4/5 h-16 text-center border rounded-lg focus:outline-sky-800 hover:border-sky-700" placeholder="Kommentar hinzufügen" />
+                    <input type="submit" class="m-4 p-2 w-1/5 h-16 border border-sky-800 rounded-lg hover:bg-sky-800 hover:text-white transition-all duration-150" value="Senden" />
+                </form>
+                {{  errorMessage }}
+            </div>
+        </div>
+    </div>
+</template>

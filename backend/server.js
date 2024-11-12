@@ -29,31 +29,31 @@ app.post("/signup", async (req, res) => {
         //Überprüfen ob Username bereits existiert
         const exist = await sql`SELECT * FROM users WHERE username = ${username}`
         if (exist.length > 0) {
-           return res.status(400).json({ message: "Username bereits vergeben" })
+            return res.status(400).json({ message: "Username bereits vergeben" })
         }
 
-        
-            //Passwort hashen (zur Sicherheit)
-            const salt = crypto.randomBytes(16).toString('hex'); // Erzeuge ein zufälliges Salt
-            const keylen = 64; // Länge des Hashs
-            const hash = await new Promise((resolve, reject) => {
-                crypto.scrypt(password, salt, keylen, (err, derivedKey) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve(derivedKey.toString('hex')); // Hash in hex umwandeln
-                });
+
+        //Passwort hashen (zur Sicherheit)
+        const salt = crypto.randomBytes(16).toString('hex'); // Erzeuge ein zufälliges Salt
+        const keylen = 64; // Länge des Hashs
+        const hash = await new Promise((resolve, reject) => {
+            crypto.scrypt(password, salt, keylen, (err, derivedKey) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(derivedKey.toString('hex')); // Hash in hex umwandeln
             });
+        });
 
 
-            const query = await sql`INSERT INTO users (username, password, salt) VALUES (${username}, ${hash}, ${salt}) RETURNING*`
+        const query = await sql`INSERT INTO users (username, password, salt) VALUES (${username}, ${hash}, ${salt}) RETURNING*`
 
-            res.status(200).json({ message: "Benutzer erfolgreich erstellt" })
-        }
+        res.status(200).json({ message: "Benutzer erfolgreich erstellt" })
+    }
 
 
 
-    
+
 
     catch (error) {
         console.log("Fehler aufgetreten: ", error)
@@ -63,24 +63,24 @@ app.post("/signup", async (req, res) => {
     res.status(200)
 })
 
-app.post("/login", async (req,res) => {
-    const {username, password} = req.body
+app.post("/login", async (req, res) => {
+    const { username, password } = req.body
     console.log(username, password)
     try {
         const query = await sql`SELECT * FROM users WHERE username = ${username}`
         const user = query[0]
-        
+
         //das passwort wird als storedhash angezeigt und hash ist der hash aus der Datenbank
-        const { password: storedHash, salt} = user
+        const { password: storedHash, salt } = user
         console.log("SALT", salt)
 
         //Passwort überprüfen
         console.log("PASSWROT: ", password)
         const keylen = 64
 
-        const hash = await new Promise( (resolve, reject) => {
+        const hash = await new Promise((resolve, reject) => {
             crypto.scrypt(password, salt, keylen, (err, derivedKey) => {
-                if(err) {
+                if (err) {
                     console.log("FEHLER in crypto.scrypt")
                     return reject(err)
                 }
@@ -88,55 +88,122 @@ app.post("/login", async (req,res) => {
                 console.log("berechneter hash", derivedHash)
                 resolve(derivedKey.toString("hex"))
             })
-        } )
+        })
 
 
-        if(hash !== storedHash) {
-            return res.status(401).json({message: "Falsche Anmeldedaten"})
+        if (hash !== storedHash) {
+            return res.status(401).json({ message: "Falsche Anmeldedaten" })
         }
 
-        res.status(200).json({message: "Anmeldung erfolgreich", username: user.username, id: user.id})
+        res.status(200).json({ message: "Anmeldung erfolgreich", username: user.username, id: user.id })
 
     }
 
-    catch(error) {
+    catch (error) {
         console.log("Fehler aufgetreten: ", error)
-        res.status(500).json({message: "Falsche Eingabe"})
+        res.status(500).json({ message: "Falsche Eingabe" })
     }
 
 
 })
 
-app.post("/new", async (req,res) => {
-    const {author, content, category} = req.body
+app.post("/new", async (req, res) => {
+    const { author, content, category } = req.body
     console.log(author, content, category)
+    const comments = '[{"author": "testuser", "comment": "Ein Kommentar"}, {"author": "user", "comment": "Noch ein Kommentar"}]'
 
     try {
-        const query = await sql`INSERT INTO blog (author, content, category) VALUES (${author}, ${content}, ${category}) RETURNING*`
-        res.status(200).json({message: "angekommen"})
-    
+        const query = await sql`INSERT INTO blog (author, content, category, comments) VALUES (${author}, ${content}, ${category}, ${comments}) RETURNING*`
+        res.status(200).json({ message: "angekommen" })
+
     }
 
-    catch(error) {
-        res.status(500).json({message: "Fehler aufgretreten"})
+    catch (error) {
+        res.status(500).json({ message: error })
     }
 
 
-    
+
 })
 
-app.post("/profile", async (req,res) => {
-    const {username} = req.body
-    
+app.post("/profile", async (req, res) => {
+    const { username } = req.body
+
     try {
         const query = await sql`SELECT * FROM blog WHERE author = ${username}`
         console.log(query)
-        res.status(200).json({message: "Call erfolgreich", data: query})
+        res.status(200).json({ message: "Call erfolgreich", data: query })
     }
-    
-    catch(error) {
-        res.status(500).json({message: error})
+
+    catch (error) {
+        res.status(500).json({ message: error })
     }
+})
+
+app.get("/getPostings", async (req, res) => {
+
+    const query = await sql`SELECT * FROM blog`
+    console.log("ALLPOSTNGS: ", query)
+    res.status(200).json({ data: query })
+})
+
+app.post("/postDetail", async (req, res) => {
+    const { postID } = req.body
+    console.log(postID)
+
+    try {
+        const query = await sql`SELECT * FROM blog WHERE id = ${postID}`
+        if (query.length == 0) {
+            return res.status(401).json({ message: "Kein Post gefunden" })
+        }
+
+        res.status(200).json({ data: query })
+    }
+
+    catch (err) {
+        res.status(500).json({ message: err })
+    }
+
+
+
+})
+
+app.post("/newComment", async (req, res) => {
+    const { postID, author, comment } = req.body
+    console.log(postID, author, comment)
+
+    //Post mit ID Abrufen und kommtar hinzufügen
+    try {
+        const query = await sql`SELECT * FROM blog WHERE id = ${postID}`
+        if (query.length === 0) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        const oldComments = query[0].comments || [];
+        const updatedComments = [...oldComments, { author: author, comment: comment }];
+
+        
+
+        //Kommentare im Datensatz aktualisieren
+        const updateQuery = await sql`
+                UPDATE blog 
+                SET comments = ${JSON.stringify(updatedComments)}::jsonb 
+                WHERE id = ${postID} 
+                RETURNING *;
+            `;
+
+        res.status(200).json({
+            message: "Comment added successfully",
+            post: updateQuery[0],
+        });
+
+    }
+
+    catch (err) {
+        console.log(err)
+        res.status(500).json({ message: err })
+    }
+
 })
 
 app.listen(port, () => {
