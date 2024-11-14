@@ -110,10 +110,9 @@ app.post("/login", async (req, res) => {
 app.post("/new", async (req, res) => {
     const { author, content, category } = req.body
     console.log(author, content, category)
-    const comments = '[{"author": "testuser", "comment": "Ein Kommentar"}, {"author": "user", "comment": "Noch ein Kommentar"}]'
-
+    
     try {
-        const query = await sql`INSERT INTO blog (author, content, category, comments) VALUES (${author}, ${content}, ${category}, ${comments}) RETURNING*`
+        const query = await sql`INSERT INTO blog (author, content, category) VALUES (${author}, ${content}, ${category}) RETURNING*`
         res.status(200).json({ message: "angekommen" })
 
     }

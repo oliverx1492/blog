@@ -8,11 +8,17 @@ const route = useRoute()
 const id = route.params.id
 const post = ref([])
 const errorMessage = ref("")
-
+const noComments = ref("")
 const comment = ref("")
+
+// Toogle Kommetare View
+const showComments = ref(false)
+const showCommentsMessage = ref("Kommentare anzeigen")
 
 //Aus Backend fetchen und ein Input für Kommentare verwenden
 const getPostDetail = async (postID) => {
+
+    comment.value = ""
 
     try {
         const response = await fetch("http://localhost:3000/postDetail", {
@@ -28,6 +34,10 @@ const getPostDetail = async (postID) => {
             console.log(data.data)
             post.value = data.data
             console.log("PV: ", post.value[0].id)
+            if(post.value[0].comments == null) {
+                noComments.value = "Noch keine Kommentare"
+            }
+            console.log("Kommentare: ", post.value[0].comments)
         }
 
         else {
@@ -50,7 +60,7 @@ const fetchComment = async (commentData) => {
         const response = await fetch("http://localhost:3000/newComment", {
             method: "POST",
             headers: {
-                "Content-type":"application/json"
+                "Content-type": "application/json"
             },
             body: JSON.stringify(commentData)
         })
@@ -67,25 +77,34 @@ const fetchComment = async (commentData) => {
         }
     }
 
-    catch(err) {
+    catch (err) {
         console.error(err);
-        
+
     }
 }
 
 const submitComment = (e) => {
     e.preventDefault();
     errorMessage.value = ""
-    if(!comment.value) {
+    if (!comment.value) {
         return errorMessage.value = "Kein Kommentar"
     }
     console.log(comment.value)
     console.log("Author: ", localStorage.getItem("lsUsername"))
-    console.log("POST ID: ",id)
+    console.log("POST ID: ", id)
     const username = localStorage.getItem("lsUsername")
+    
 
     // Backend route definieren
-    fetchComment({postID:id, author: username, comment: comment.value})
+    fetchComment({ postID: id, author: username, comment: comment.value })
+}
+
+const toggleComments = () => {
+    showComments.value = !showComments.value
+    if(showComments.value) {
+        return showCommentsMessage.value = "Kommentare einklappen"
+    }
+    showCommentsMessage.value = "Kommentare anzeigen"
 }
 
 onMounted(() => {
@@ -103,29 +122,54 @@ onMounted(() => {
         Post {{ id }}
         <p class="text-2xl m-4 p-4">Meine Postings</p>
 
-        <div v-for="(item, index) in post" :key="index" class="w-2/3">
-            <div class="border border-sky-800 rounded-lg p-4 m-4 ">
+        <div v-for="(item, index) in post" :key="index" class="lg:w-2/3">
+            <div class="lg:border lg:border-sky-800 rounded-lg p-4 m-4 ">
                 <!-- Post -->
                 <div class="min-h-64">
-                    <p class="text-xl p-2 m-2">{{ item.author }}</p>
+
+                    <p class="text-3xl p-2 m-2">{{ item.author }}</p>
+                    <p class="text-sm m-2">{{item.created_at.slice(0,19) }}</p>  
                     <hr />
+                    <div class="p-2 m-2 bg-gray-50 min-h-64 rounded-md">
                     <p class="text-lg p-2">{{ item.content }}</p>
                 </div>
-                <!-- Kommentare -->
-                <div v-for="(item, indexComm) in post[index].comments" :key="indexComm">
-                    <div class="border m-2 p-2">
-                        {{ item.author }}
-                        {{ item.comment }}
-                    </div>
-                   
                 </div>
+
+                <p @click="toggleComments" class="text-sm p-2 m-2 text-sky-800 cursor-pointer">{{ showCommentsMessage }}</p>
+                <!-- Kommentare -->
                 
+                <div v-if="showComments">
+                    <p class="m-2 p-2 text-md text-center">{{ noComments }}</p>
+                <div  class="flex justify-end" v-for="(item, indexComm) in post[index].comments" :key="indexComm">
+                   
+                    <div class="border rounded-md flex flex-col m-2 p-2 lg:w-2/3 w-full">
+                        <!-- Name -->
+                        <div>
+                            <p class="m-2 p-2">{{ item.author }}</p>
+                            <hr /> 
+                        </div>
+
+                        <!-- Content -->
+                        <div class="p-2 m-4">
+                            <p>{{ item.comment }}</p>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+                <!-- Kommentar schreiben -->
                 <hr />
-                <form @submit="submitComment" class="flex justify-around items-center p-4 m-4">
-                    <input v-model="comment" type="text" class="m-2 p-2 w-4/5 h-16 text-center border rounded-lg focus:outline-sky-800 hover:border-sky-700" placeholder="Kommentar hinzufügen" />
-                    <input type="submit" class="m-4 p-2 w-1/5 h-16 border border-sky-800 rounded-lg hover:bg-sky-800 hover:text-white transition-all duration-150" value="Senden" />
+                <form @submit="submitComment" class="flex lg:flex-row flex-col justify-around items-center p-4 m-4">
+                    <input v-model="comment" type="text"
+                        class="m-2 p-2 lg:w-4/5 w-full h-16 text-center border rounded-lg focus:outline-sky-800 hover:border-sky-700"
+                        placeholder="Kommentar hinzufügen" />
+                    <input type="submit"
+                        class="m-4 p-2 lg:w-1/5 h-16 border border-sky-800 rounded-lg hover:bg-sky-800 hover:text-white transition-all duration-150"
+                        value="Senden" />
                 </form>
-                {{  errorMessage }}
+                {{ errorMessage }}
             </div>
         </div>
     </div>

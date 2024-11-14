@@ -3,51 +3,80 @@ import { onMounted, ref } from 'vue';
 import Navbar from './Navbar.vue';
 import router from '../router';
 
-    const errorMessage = ref("")
+const errorMessage = ref("")
 
-    const username = localStorage.getItem("lsUsername")
-    const postings = ref([])
+const filteredData = ref([])
+const username = localStorage.getItem("lsUsername")
+const postings = ref([])
 
-    const getPostings = async (id) => {
-        console.log("GETPOSTINGS")
-        try {
-            const response = await fetch("http://localhost:3000/profile", {
-                method: "POST",
-                headers: {
-                    "Content-type":"application/json"
-                },
-                body: JSON.stringify({username:username})
-            })
+const category = ref("")
+//sortieren
+const sortBy = ref("Älteste zuerst")
 
-            if(response.ok) {
-                console.log("Funktioniert")
-                const data = await response.json()
-                console.log(data.data)
-                postings.value = data.data
-                if(data.data.length == 0) {
-                    errorMessage.value = "Noch kein Posting veröffentlicht"
-                }
+const getPostings = async (id) => {
+
+    category.value = ""
+    console.log("GETPOSTINGS")
+    try {
+        const response = await fetch("http://localhost:3000/profile", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({ username: username })
+        })
+
+        if (response.ok) {
+            console.log("Funktioniert")
+            const data = await response.json()
+            console.log(data.data)
+            postings.value = data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            filteredData.value = postings.value
+            if (data.data.length == 0) {
+                errorMessage.value = "Noch kein Posting veröffentlicht"
             }
         }
-
-        catch(error) {
-            console.log("Fehler aufgetreten: ", error);
-            
-        }
     }
 
-    const openPost = (postID) => {
-        console.log(postID)
-        router.push(`/post/${postID}`)
-        // Hier kann der Post geöffnet werden und kommentiert werden, bzw Kommentare angesehen werden
+    catch (error) {
+        console.log("Fehler aufgetreten: ", error);
+
+    }
+}
+
+const changeCategory = () => {
+    
+    console.log(category.value)
+    filteredData.value = postings.value.filter((item) => item.category == category.value)
+    
+    //nach Datum sortieren
+    
+    console.log(postings.value)
+}
+
+const openPost = (postID) => {
+    console.log(postID)
+    router.push(`/post/${postID}`)
+    // Hier kann der Post geöffnet werden und kommentiert werden, bzw Kommentare angesehen werden
+}
+
+const sortData = () => {
+    if (sortBy.value === "Älteste zuerst") {
+
+        postings.value = postings.value.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        return sortBy.value = "Neueste zuerst"
     }
 
-    //Meherer Informationen zum User
-    //Vorname, Nachname, Alter, Land
+    postings.value = postings.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    sortBy.value = "Älteste zuerst"
+}
 
-    onMounted( ()=> {
-        getPostings(username)
-    } )
+//Meherer Informationen zum User
+//Vorname, Nachname, Alter, Land
+
+onMounted(() => {
+    getPostings(username)
+})
 
 </script>
 
@@ -55,18 +84,42 @@ import router from '../router';
 
     <Navbar />
 
-    <p class="text-2xl m-4 p-4">Meine Postings</p>
-    <p class="text-md m-2 p-2">{{  errorMessage }}</p>
-    <div v-for="(post, index) in postings" :key="index">
-        <div @click="()=> openPost(post.id)" class="border border-sky-800 rounded-lg h-64 p-4 m-4 w-2/3">
+    <div class="flex flex-col items-center justify-center">
+        <p class="text-2xl m-4 p-4">Meine Postings</p>
+        <p class="text-md m-2 p-2">{{ errorMessage }}</p>
+        <select @change="changeCategory" v-model="category"
+            class="border border-sky-800 rounded-lg m-2 p-2 lg:w-1/3 w-full">
+            <option value="Politik">Politik</option>
+            <option value="Sport">Sport</option>
+            <option value="Technologie">Technologie</option>
+            <option value="Gesundheit">Gesundheit</option>
+            <option value="Musik">Musik</option>
+            <option value="Filme">Filme</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Wirtschaft">Wirtschaft</option>
+            <option value="Reisen">Reisen</option>
+        </select>
+        <p @click="getPostings" class="text-sm cursor-pointer m-2 p-2">Filter löschen</p>
+        <p @click="sortData" class="text-sm cursor-pointer m-2 p-2">Sortieren nach: {{ sortBy }}</p>
+    </div>
+
+
+    <div class="flex justify-center" v-for="(post, index) in filteredData" :key="index">
+        <div @click="() => openPost(post.id)" class="border border-sky-800 rounded-lg min-h-64 p-4 m-4 lg:w-2/3">
+            <p class="text-xs">{{ post.category }}</p>
             <p class="text-xl p-2 m-2">{{ post.author }}</p>
+            <p class="text-sm m-2">{{ post.created_at.slice(0, 19) }}</p>
             <hr />
             <p class="text-lg p-2">{{ post.content }}</p>
-            
+
         </div>
     </div>
 
 
+
+
+
+
 </template>
 
-    <!-- Für das wiedergeben der Posts ist vlt ein eigene Component nützlich -->
+<!-- Für das wiedergeben der Posts ist vlt ein eigene Component nützlich -->
