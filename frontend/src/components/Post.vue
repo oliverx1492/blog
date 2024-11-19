@@ -126,7 +126,7 @@ onMounted(() => {
             <div class="lg:border lg:border-sky-800 rounded-lg p-4 m-4 ">
                 <!-- Post -->
                 <div class="min-h-64">
-
+                    <p class="text-xs">{{ item.category }}</p>
                     <p class="text-3xl p-2 m-2">{{ item.author }}</p>
                     <p class="text-sm m-2">{{item.created_at.slice(0,19) }}</p>  
                     <hr />

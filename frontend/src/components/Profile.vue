@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import Navbar from './Navbar.vue';
 import router from '../router';
+import PersonalInformation from './PersonalInformation.vue';
 
 const errorMessage = ref("")
 
@@ -84,8 +85,10 @@ onMounted(() => {
 
     <Navbar />
 
+    <PersonalInformation />
+
     <div class="flex flex-col items-center justify-center">
-        <p class="text-2xl m-4 p-4">Meine Postings</p>
+        <p class="text-2xl m-2 pt-2">Meine Postings</p>
         <p class="text-md m-2 p-2">{{ errorMessage }}</p>
         <select @change="changeCategory" v-model="category"
             class="border border-sky-800 rounded-lg m-2 p-2 lg:w-1/3 w-full">
@@ -117,7 +120,7 @@ onMounted(() => {
 
 
 
-
+    
 
 
 </template>

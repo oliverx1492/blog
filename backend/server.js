@@ -205,6 +205,62 @@ app.post("/newComment", async (req, res) => {
 
 })
 
+app.post("/getProfileData", async (req, res) => {
+    const {id} = req.body
+    console.log(id)
+
+    try {
+        const query = await sql`SELECT * FROM users WHERE id = ${id}`
+        if(query.length > 0) {
+            res.status(200).json({message: query[0]})
+        }
+      
+    }
+
+    catch(err) {
+        res.status(401).json({message: err})
+    }
+    
+
+
+
+})
+
+app.post("/changeProfileData", async (req,res) => {
+    console.log(req.body)
+
+    try {
+        const query = await sql `UPDATE users SET 
+                firstname = ${req.body.firstname}, 
+                lastname = ${req.body.lastname},
+                age = ${req.body.age},
+                country = ${req.body.country},
+                bio = ${req.body.bio},
+                picturelink = ${req.body.picturelink}
+                WHERE id = ${req.body.id}
+                RETURNING *;
+            `
+
+            if(query.length > 0) {
+                res.status(200).json({message: "Erfolgreich updatet"})
+            }
+
+            else {
+                res.status(401).json({message: "Fehler aufgretreten"})
+            }
+
+
+        
+
+    }
+
+    catch(err) {
+        res.status(401).json({message: err})
+    }
+
+
+})
+
 app.listen(port, () => {
     console.log("Server läuft auf PORT: ", port)
 })
