@@ -2,6 +2,7 @@
 import { useRoute, useRouter } from 'vue-router';
 import Navbar from './Navbar.vue';
 import { onMounted, ref } from 'vue';
+import router from '../router';
 
 
 const route = useRoute()
@@ -120,14 +121,14 @@ onMounted(() => {
     <div class="flex flex-col justify-center items-center">
 
         Post {{ id }}
-        <p class="text-2xl m-4 p-4">Meine Postings</p>
+
 
         <div v-for="(item, index) in post" :key="index" class="lg:w-2/3">
             <div class="lg:border lg:border-sky-800 rounded-lg p-4 m-4 ">
                 <!-- Post -->
                 <div class="min-h-64">
                     <p class="text-xs">{{ item.category }}</p>
-                    <p class="text-3xl p-2 m-2">{{ item.author }}</p>
+                    <p @click="$router.push(`/profile/${item.author}`)" class="cursor-pointer text-3xl p-2 m-2">{{ item.author }}</p>
                     <p class="text-sm m-2">{{item.created_at.slice(0,19) }}</p>  
                     <hr />
                     <div class="p-2 m-2 bg-gray-50 min-h-64 rounded-md">
@@ -145,7 +146,7 @@ onMounted(() => {
                     <div class="border rounded-md flex flex-col m-2 p-2 lg:w-2/3 w-full">
                         <!-- Name -->
                         <div>
-                            <p class="m-2 p-2">{{ item.author }}</p>
+                            <p @click="router.push(`/profile/${item.author}`)" class="m-2 p-2 cursor-pointer">{{ item.author }}</p>
                             <hr /> 
                         </div>
 

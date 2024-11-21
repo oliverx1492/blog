@@ -1,12 +1,22 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 
 const changeToggle = ref(false)
 const buttonText = ref("Ändern")
 
-const id = localStorage.getItem("lsId")
+// Der Username aus dem Link wird verwendet um die Abfrage zu machen
+const route = useRoute()
+const username = route.params.username
 
+
+//Der Username der im localStorage gespeichert ist, zum Vergleich ob das Profil mit dem angemeldeten
+//User matcht für die Bearbeitung (damit jeder nur sein eigenes Profil bearbeiten kann)
+const lsUsername = localStorage.getItem("lsUsername")
+
+
+//vmodels für 
 const firstName = ref("")
 const lastName = ref("")
 const age = ref("")
@@ -14,10 +24,13 @@ const country = ref("")
 const bio = ref("")
 const pictureLink = ref("")
 
-const username = localStorage.getItem("lsUsername")
+
+const noUser = ref(true)
+
 
 // Persönliche Daten aus den Backend abgerufen
 const getProfileData = async () => {
+    
     
     try {
         const response = await fetch("http://localhost:3000/getProfileData", {
@@ -25,12 +38,13 @@ const getProfileData = async () => {
             headers: {
                 "Content-type": "application/json"
             },
-            body: JSON.stringify({ id: id })
+            body: JSON.stringify({ username: username })
         })
 
         if (response.ok) {
             const data = await response.json()
-            console.log(data.message)
+       
+            
 
             // Daten aus dem Backend zurndnen
             firstName.value = data.message.firstname
@@ -44,7 +58,8 @@ const getProfileData = async () => {
 
         else {
             const data = await response.json()
-            console.log(data)
+            console.log("ERROR DATA: ", data)
+            noUser.value = false
         }
     }
 
@@ -66,7 +81,7 @@ const changeProfileData = async (inputData) => {
 
         if(response.ok) {
             const data = await response.json()
-            console.log(data)
+            
         }
 
         else {
@@ -108,19 +123,20 @@ const changeInfos = () => {
 }
 
 onMounted(() => {
+    console.log("MOUNTED")
     getProfileData()
 })
 
 </script>
 
 <template>
-    <div class="flex flex-col items-center justify-center m-2 p-2">
+    <div v-if="noUser" class="flex flex-col items-center justify-center m-2 p-2">
         <p class="m-2 p-2 text-2xl">Persönliche Infos</p>
 
         <!-- Informationen einsehen -->
-        <div v-if="!changeToggle" class="border rounded-md border-sky-800 w-1/2 flex flex-col">
+        <div v-if="!changeToggle" class="lg:border rounded-md border-sky-800 lg:w-1/2 w-full flex flex-col">
             <div class="flex justify-center items-center">
-                <img class="h-48 rounded-full m-4 " :src="pictureLink" alt="Profilebild" />
+                <img class="max-h-48 rounded-full m-4 " :src="pictureLink" alt="Profibild" />
                 <p class="m-2 font-bold text-2xl">@{{ username }}</p>
                 
             </div>
@@ -176,9 +192,13 @@ onMounted(() => {
         </div>
 
 
-        <button @click="changeInfos"
+        <button v-if="username === lsUsername" @click="changeInfos"
             class="m-4 p-2 w-24 border border-sky-800 rounded-lg hover:bg-sky-800 hover:text-white transition-all duration-150">{{ buttonText }}</button>
 
 
+    </div>
+
+    <div v-if="!noUser" class="text-center m-2 p-2">
+        <p class="text-3xl">Kein User gefunden</p>
     </div>
 </template>

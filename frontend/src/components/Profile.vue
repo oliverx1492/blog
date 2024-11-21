@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, onUpdated, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import Navbar from './Navbar.vue';
 import router from '../router';
 import PersonalInformation from './PersonalInformation.vue';
@@ -7,32 +8,38 @@ import PersonalInformation from './PersonalInformation.vue';
 const errorMessage = ref("")
 
 const filteredData = ref([])
-const username = localStorage.getItem("lsUsername")
+// const username = localStorage.getItem("lsUsername")
 const postings = ref([])
 
 const category = ref("")
 //sortieren
 const sortBy = ref("Älteste zuerst")
 
-const getPostings = async (id) => {
+const route = useRoute()
+const usernameRoute = route.params.username
+const username = ref(usernameRoute)
+
+const getPostings = async () => {
 
     category.value = ""
-    console.log("GETPOSTINGS")
+ 
     try {
         const response = await fetch("http://localhost:3000/profile", {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
             },
-            body: JSON.stringify({ username: username })
+            body: JSON.stringify({ username: username.value })
         })
 
         if (response.ok) {
-            console.log("Funktioniert")
+       
             const data = await response.json()
-            console.log(data.data)
+         
+
             postings.value = data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
             filteredData.value = postings.value
+
             if (data.data.length == 0) {
                 errorMessage.value = "Noch kein Posting veröffentlicht"
             }
@@ -46,17 +53,16 @@ const getPostings = async (id) => {
 }
 
 const changeCategory = () => {
-    
-    console.log(category.value)
+   
     filteredData.value = postings.value.filter((item) => item.category == category.value)
     
     //nach Datum sortieren
     
-    console.log(postings.value)
+    
 }
 
 const openPost = (postID) => {
-    console.log(postID)
+    
     router.push(`/post/${postID}`)
     // Hier kann der Post geöffnet werden und kommentiert werden, bzw Kommentare angesehen werden
 }
@@ -76,8 +82,19 @@ const sortData = () => {
 //Vorname, Nachname, Alter, Land
 
 onMounted(() => {
-    getPostings(username)
+    getPostings()
 })
+
+watch( ()=> route.params.username, 
+(newValue, oldValue) => {
+    window.location.reload()
+} )
+
+
+
+
+
+
 
 </script>
 
@@ -85,13 +102,15 @@ onMounted(() => {
 
     <Navbar />
 
+   
     <PersonalInformation />
+    
 
     <div class="flex flex-col items-center justify-center">
         <p class="text-2xl m-2 pt-2">Meine Postings</p>
         <p class="text-md m-2 p-2">{{ errorMessage }}</p>
         <select @change="changeCategory" v-model="category"
-            class="border border-sky-800 rounded-lg m-2 p-2 lg:w-1/3 w-full">
+            class="border border-sky-800 rounded-lg m-2 p-2 lg:w-1/3 w-5/6 w-full">
             <option value="Politik">Politik</option>
             <option value="Sport">Sport</option>
             <option value="Technologie">Technologie</option>
@@ -106,8 +125,7 @@ onMounted(() => {
         <p @click="sortData" class="text-sm cursor-pointer m-2 p-2">Sortieren nach: {{ sortBy }}</p>
     </div>
 
-
-    <div class="flex justify-center" v-for="(post, index) in filteredData" :key="index">
+       <div class="flex justify-center" v-for="(post, index) in filteredData" :key="index">
         <div @click="() => openPost(post.id)" class="border border-sky-800 rounded-lg min-h-64 p-4 m-4 lg:w-2/3">
             <p class="text-xs">{{ post.category }}</p>
             <p class="text-xl p-2 m-2">{{ post.author }}</p>

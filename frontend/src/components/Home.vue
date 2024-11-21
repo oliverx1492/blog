@@ -65,7 +65,7 @@ onMounted(() => {
         <p class="text-xm m-2 p-2">Filter:</p>
 
         <select @change="changeCategory" v-model="category"
-            class="border border-sky-800 rounded-lg m-2 p-2 lg:w-1/3 w-full">
+            class="border border-sky-800 rounded-lg m-2 p-2 lg:w-1/3 w-5/6">
             <option value="Politik">Politik</option>
             <option value="Sport">Sport</option>
             <option value="Technologie">Technologie</option>
@@ -84,7 +84,7 @@ onMounted(() => {
     </div>
 
     <div class="flex justify-center" v-for="(post, index) in filteredData" :key="index">
-        <div @click="() => openPost(post.id)" class="border border-sky-800 rounded-lg h-64 p-4 m-4 lg:w-2/3">
+        <div @click="() => openPost(post.id)" class="border border-sky-800 rounded-lg min-h-64 p-4 m-4 lg:w-2/3 w-3/4">
             <p class="text-xs">{{ post.category }}</p>
             <p class="text-xl p-2 m-2">{{ post.author }}</p>
             <p class="text-sm m-2">{{post.created_at.slice(0,19) }}</p>  

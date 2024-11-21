@@ -206,13 +206,17 @@ app.post("/newComment", async (req, res) => {
 })
 
 app.post("/getProfileData", async (req, res) => {
-    const {id} = req.body
-    console.log(id)
+    const {username} = req.body
+    console.log(username)
 
     try {
-        const query = await sql`SELECT * FROM users WHERE id = ${id}`
+        const query = await sql`SELECT * FROM users WHERE username = ${username}`
         if(query.length > 0) {
             res.status(200).json({message: query[0]})
+        }
+
+        else {
+            res.status(401).json({message: "Kein User gefunden"})
         }
       
     }
