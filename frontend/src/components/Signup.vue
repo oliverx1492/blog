@@ -17,7 +17,7 @@ import router from '../router';
 
         //Call ans Backend
         try {
-            const response = await fetch("http://localhost:3000/signup", {
+            const response = await fetch(`${link}/signup`, {
                 method: "POST",
                 headers: {
                     "Content-type":"application/json"
@@ -104,8 +104,8 @@ import router from '../router';
               
         </div>
 
-        <div class="none lg:block lg:w-1/2 h-screen bg-sky-800">
-            
+        <div class="none lg:flex justify-center items-center lg:w-1/2 h-screen bg-sky-800 w-screen">
+            <p class="text-center text-white text-8xl font-extrabold tracking-widest">blog</p>
         </div>
 
       

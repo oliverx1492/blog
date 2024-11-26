@@ -3,11 +3,15 @@ import { ref } from 'vue';
 import router from '../router';
 import Navbar from './Navbar.vue';
 
+// Schlagwörter suche
 
+const link = "http://localhost:3000"
 
 const author = ref("")
 const content = ref("")
 const category = ref("")
+const keywords = ref("")
+
 
 const errorMessage = ref("")
 
@@ -15,7 +19,7 @@ const publishBlog = async (props) => {
     console.log(props)
 
     try {
-        const response = await fetch("http://localhost:3000/new", {
+        const response = await fetch(`${link}/new`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -47,6 +51,9 @@ const submitForm = (event) => {
     errorMessage.value = ""
     event.preventDefault();
 
+    const keywordsArray = keywords.value.split(/[,\s]+/).filter(word => word.trim() !== "")
+    
+
     author.value = localStorage.getItem("lsUsername")
 
     if (!content.value || !category.value) {
@@ -56,8 +63,8 @@ const submitForm = (event) => {
     console.log("AUTHOR: ", author.value)
     console.log("CONTENT: ", content.value)
     console.log("CATEGORY: ", category.value)
-
-    publishBlog({ author: author.value, content: content.value, category: category.value })
+    console.log("Schlüsselwörter: ", keywordsArray)
+    publishBlog({ author: author.value, content: content.value, category: category.value, keywords: keywordsArray })
 
 
 }
@@ -72,9 +79,11 @@ const submitForm = (event) => {
         <form @submit="submitForm"
             class="flex items-center flex-col lg:w-2/3 lg:h-3/5 p-4 m-4 lg:border lg:border-sky-800 rounded-lg lg:shadow-md">
             <p class="text-2xl text-center m-2 p-2">Neuen Eintrag erstellen</p>
-            <textarea v-model="content" class="m-2 p-2 border h-2/3 w-full" type="text"
+            <textarea v-model="content" class="m-2 p-2 border h-2/3 w-full rounded-md" type="text"
                 placeholder="Text hier einfügen"></textarea>
-            <select @change="changeCategory" v-model="category"
+            
+            <input type="text" placeholder="Stichwörter (optional)" v-model="keywords" class="m-2 p-2 border border-sky-800 rounded-md w-full" />
+                <select @change="changeCategory" v-model="category"
                 class="border border-sky-800 rounded-lg m-2 p-2 lg:w-1/3 w-full">
                 <option value="Politik">Politik</option>
                 <option value="Sport">Sport</option>
@@ -85,6 +94,7 @@ const submitForm = (event) => {
                 <option value="Gaming">Gaming</option>
                 <option value="Wirtschaft">Wirtschaft</option>
                 <option value="Reisen">Reisen</option>
+                <option value="Bücher">Bücher</option>
             </select>
 
             <input

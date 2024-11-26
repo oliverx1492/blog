@@ -9,6 +9,7 @@ const port = 3000
 const sql = neon(process.env.DATABASE_URL)
 const crypto = require("crypto")
 const { access } = require("fs")
+const { messaging } = require("firebase-admin")
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -108,11 +109,11 @@ app.post("/login", async (req, res) => {
 })
 
 app.post("/new", async (req, res) => {
-    const { author, content, category } = req.body
+    const { author, content, category, keywords } = req.body
     console.log(author, content, category)
     
     try {
-        const query = await sql`INSERT INTO blog (author, content, category) VALUES (${author}, ${content}, ${category}) RETURNING*`
+        const query = await sql`INSERT INTO blog (author, content, category, keywords) VALUES (${author}, ${content}, ${category}, ${keywords}) RETURNING*`
         res.status(200).json({ message: "angekommen" })
 
     }
@@ -263,6 +264,27 @@ app.post("/changeProfileData", async (req,res) => {
     }
 
 
+})
+
+app.post("/keyword", async (req,res) => {
+    const { keyword } = req.body
+    console.log("KEYWORD: ", keyword)
+
+    // SQL Abfrage nach dem Schlüsselwort
+    try {
+        const query = await sql`SELECT * FROM blog WHERE ${keyword} = ANY(keywords)`
+        if(query.length == 0) {
+            return res.status(404).json({message: "Kein Treffer bei der Suche"})
+        }
+
+        return res.status(200).json({data: query})
+    }
+
+    catch(err) {
+        console.log("Fehler aufgetreten")
+        res.status(500).json({message: err})
+    }
+    
 })
 
 app.listen(port, () => {

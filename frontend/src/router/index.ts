@@ -6,6 +6,7 @@ import Signup from "../components/Signup.vue";
 import NewEntry from "../components/NewEntry.vue";
 import Profile from "../components/Profile.vue";
 import Post from "../components/Post.vue";
+import Search from "../components/Search.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -37,6 +38,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "/post/:id",
         name: "Post",
         component: Post
+    },
+    {
+        path: "/search",
+        name: "Search",
+        component: Search
     }
 ]
 

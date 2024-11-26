@@ -2,6 +2,8 @@
     import router from '../router';
     import { ref } from 'vue';
    
+    
+const link = "http://localhost:3000"
    
 
     //Anmeldedaten
@@ -14,7 +16,7 @@
     const loginUser = async (props) => {
 
         try {
-            const response = await fetch("http://localhost:3000/login", {
+            const response = await fetch(`${link}/login`, {
                 method: "POST",
                 headers: {
                     "Content-type":"application/json"
@@ -71,8 +73,8 @@
 <template>
     <div class="flex flex-row">
 
-        <div class="none lg:block lg:w-1/2 h-screen bg-sky-800">
-            
+        <div class="none lg:flex justify-center items-center lg:w-1/2 h-screen bg-sky-800 w-screen">
+            <p class="text-center text-white text-8xl font-extrabold tracking-widest">blog</p>
         </div>
 
         <div class="lg:w-1/2 w-full h-screen flex justify-center lg:items-center">

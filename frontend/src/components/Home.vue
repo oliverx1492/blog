@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue';
 import router from '../router';
 import Navbar from './Navbar.vue';
 
+const link = "http://localhost:3000"
+
 const category = ref("")
 
 const allPostings = ref([])
@@ -16,7 +18,7 @@ const getPostings = async () => {
     //Daten werden aus Backend gefetcht, und gefitlert sodass nur die angezeigt werden die nicht vom 
     //anmgemldeten User stammen
     category.value = ""
-    const response = await fetch("http://localhost:3000/getPostings")
+    const response = await fetch(`${link}/getPostings`)
     const data = await response.json()
     allPostings.value = data.data.filter((item) => item.author !== localStorage.getItem("lsUsername"))
 
@@ -37,7 +39,7 @@ const changeCategory = () => {
 const openPost = (postID) => {
     console.log(postID)
     router.push(`/post/${postID}`)
-    //Hinzufügen zum Post, Kommentare, Aufrufe, Likes oä
+    
 }
 
 const sortData = () => {
@@ -75,6 +77,7 @@ onMounted(() => {
             <option value="Gaming">Gaming</option>
             <option value="Wirtschaft">Wirtschaft</option>
             <option value="Reisen">Reisen</option>
+            <option value="Bücher">Bücher</option>
         </select>
 
         <p @click="getPostings" class="text-sm cursor-pointer m-2 p-2">Filter löschen</p>

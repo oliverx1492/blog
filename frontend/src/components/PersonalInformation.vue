@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 
+const link = "http://localhost:3000"
+
 const changeToggle = ref(false)
 const buttonText = ref("Ändern")
 
@@ -33,7 +35,7 @@ const getProfileData = async () => {
     
     
     try {
-        const response = await fetch("http://localhost:3000/getProfileData", {
+        const response = await fetch(`${link}/getProfileData`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -71,7 +73,7 @@ const getProfileData = async () => {
 // Persönliche Daten ändern
 const changeProfileData = async (inputData) => {
     try {
-        const response = await fetch("http://localhost:3000/changeProfileData", {
+        const response = await fetch(`${link}/changeProfileData`, {
             method: "POST",
             headers: {
                 "Content-type":"application/json"

@@ -5,6 +5,8 @@ import Navbar from './Navbar.vue';
 import router from '../router';
 import PersonalInformation from './PersonalInformation.vue';
 
+const link = "http://localhost:3000"
+
 const errorMessage = ref("")
 
 const filteredData = ref([])
@@ -24,7 +26,7 @@ const getPostings = async () => {
     category.value = ""
  
     try {
-        const response = await fetch("http://localhost:3000/profile", {
+        const response = await fetch(`${link}/profile`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -120,6 +122,7 @@ watch( ()=> route.params.username,
             <option value="Gaming">Gaming</option>
             <option value="Wirtschaft">Wirtschaft</option>
             <option value="Reisen">Reisen</option>
+            <option value="Bücher">Bücher</option>
         </select>
         <p @click="getPostings" class="text-sm cursor-pointer m-2 p-2">Filter löschen</p>
         <p @click="sortData" class="text-sm cursor-pointer m-2 p-2">Sortieren nach: {{ sortBy }}</p>

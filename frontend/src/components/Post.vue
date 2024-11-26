@@ -4,6 +4,7 @@ import Navbar from './Navbar.vue';
 import { onMounted, ref } from 'vue';
 import router from '../router';
 
+const link = "http://localhost:3000"
 
 const route = useRoute()
 const id = route.params.id
@@ -22,7 +23,7 @@ const getPostDetail = async (postID) => {
     comment.value = ""
 
     try {
-        const response = await fetch("http://localhost:3000/postDetail", {
+        const response = await fetch(`${link}/postDetail`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -58,7 +59,7 @@ const getPostDetail = async (postID) => {
 
 const fetchComment = async (commentData) => {
     try {
-        const response = await fetch("http://localhost:3000/newComment", {
+        const response = await fetch(`${link}/newComment`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
