@@ -60,10 +60,11 @@ onMounted(() => {
 </script>
 
 <template>
+    
 
     <Navbar />
     <div class="flex flex-col items-center justify-center">
-        <p class="text-5xl p-6 m-6">Alle Posts</p>
+        <p class="text-5xl p-6 m-6">Feed</p>
         <p class="text-xm m-2 p-2">Filter:</p>
 
         <select @change="changeCategory" v-model="category"

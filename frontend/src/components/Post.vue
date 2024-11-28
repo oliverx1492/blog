@@ -169,7 +169,7 @@ onMounted(() => {
                         placeholder="Kommentar hinzufügen" />
                     <input type="submit"
                         class="m-4 p-2 lg:w-1/5 h-16 border border-sky-800 rounded-lg hover:bg-sky-800 hover:text-white transition-all duration-150"
-                        value="Senden" />
+                        value="Kommentieren" />
                 </form>
                 {{ errorMessage }}
             </div>
