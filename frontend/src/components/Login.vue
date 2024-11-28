@@ -3,7 +3,7 @@
     import { ref } from 'vue';
    
     
-const link = "http://localhost:3000"
+const link = "https://blog-mdsr.onrender.com"
    
 
     //Anmeldedaten

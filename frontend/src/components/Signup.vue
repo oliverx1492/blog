@@ -7,6 +7,8 @@ import router from '../router';
     const password = ref("")
     const password_rpt = ref("")
 
+
+    const link = "https://blog-mdsr.onrender.com"
     //Fehlermeldung
     const errorMessage = ref("")
     //Erfolgsmeldung

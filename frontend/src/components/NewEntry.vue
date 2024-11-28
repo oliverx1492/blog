@@ -5,7 +5,7 @@ import Navbar from './Navbar.vue';
 
 // Schlagwörter suche
 
-const link = "http://localhost:3000"
+const link = "https://blog-mdsr.onrender.com"
 
 const author = ref("")
 const content = ref("")
@@ -95,6 +95,7 @@ const submitForm = (event) => {
                 <option value="Wirtschaft">Wirtschaft</option>
                 <option value="Reisen">Reisen</option>
                 <option value="Bücher">Bücher</option>
+                <option value="Sonstige">Sonstige</option>
             </select>
 
             <input

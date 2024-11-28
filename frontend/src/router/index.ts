@@ -51,7 +51,7 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
     // Überprüfen, ob der Benutzer eingeloggt ist, indem wir nach "lsId" im localStorage suchen
     const isLoggedIn = !!localStorage.getItem("lsId");
   

@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 import router from '../router';
 import Navbar from './Navbar.vue';
 
-const link = "http://localhost:3000"
+const link = "https://blog-mdsr.onrender.com"
 
 const category = ref("")
 
@@ -79,6 +79,7 @@ onMounted(() => {
             <option value="Wirtschaft">Wirtschaft</option>
             <option value="Reisen">Reisen</option>
             <option value="Bücher">Bücher</option>
+            <option value="Sonstige">Sonstige</option>
         </select>
 
         <p @click="getPostings" class="text-sm cursor-pointer m-2 p-2">Filter löschen</p>

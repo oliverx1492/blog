@@ -4,7 +4,7 @@ import Navbar from './Navbar.vue';
 import { onMounted, ref } from 'vue';
 import router from '../router';
 
-const link = "http://localhost:3000"
+const link = "https://blog-mdsr.onrender.com"
 
 const route = useRoute()
 const id = route.params.id

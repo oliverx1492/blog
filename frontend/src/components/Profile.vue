@@ -5,7 +5,7 @@ import Navbar from './Navbar.vue';
 import router from '../router';
 import PersonalInformation from './PersonalInformation.vue';
 
-const link = "http://localhost:3000"
+const link = "https://blog-mdsr.onrender.com"
 
 const errorMessage = ref("")
 
@@ -123,6 +123,7 @@ watch( ()=> route.params.username,
             <option value="Wirtschaft">Wirtschaft</option>
             <option value="Reisen">Reisen</option>
             <option value="Bücher">Bücher</option>
+            <option value="Sonstige">Sonstige</option>
         </select>
         <p @click="getPostings" class="text-sm cursor-pointer m-2 p-2">Filter löschen</p>
         <p @click="sortData" class="text-sm cursor-pointer m-2 p-2">Sortieren nach: {{ sortBy }}</p>

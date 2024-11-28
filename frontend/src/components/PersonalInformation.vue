@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 
-const link = "http://localhost:3000"
+const link = "https://blog-mdsr.onrender.com"
 
 const changeToggle = ref(false)
 const buttonText = ref("Ändern")
