@@ -5,7 +5,7 @@ const http = require("http")
 const cors = require("cors")
 require("dotenv").config()
 const { neon } = require("@neondatabase/serverless")
-const port = 3000
+const port = process.env.PORT || 3000
 const sql = neon(process.env.DATABASE_URL)
 const crypto = require("crypto")
 const { access } = require("fs")
