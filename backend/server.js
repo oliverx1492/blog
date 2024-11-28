@@ -9,7 +9,7 @@ const port = 3000
 const sql = neon(process.env.DATABASE_URL)
 const crypto = require("crypto")
 const { access } = require("fs")
-const { messaging } = require("firebase-admin")
+
 
 app.use(cors())
 app.use(bodyParser.json())
