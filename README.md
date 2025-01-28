@@ -51,6 +51,13 @@ This Blog Application is a platform for users to share their thoughts and ideas 
 - **Search Functionality**:
   - Optimized for quick retrieval of posts based on keywords or topics.
 
+## Important Notes
+- The app uses a **free server** to store and manage data. As a result, it may take **1-2 minutes** for the server to start and communicate.
+- At the top of the application, the **server status** is displayed:
+  - **Server is Live**: The server is ready, and you can use all features.
+  - **Not connected**: Please wait until the server becomes live (maybe you need to refresh the page after a while).
+
+  Link: https://blog-1-nrk9.onrender.com/
 ---
 
 ## Used Technologies
